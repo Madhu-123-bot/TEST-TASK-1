@@ -1,74 +1,54 @@
 pipeline {
-  agent any
-
-  triggers {
-    githubPush()
-  }
-
-  stages {
-    stage('Checkout') {
-      steps {
-        script {
-          git branch: 'main', url: 'https://github.com/Madhu-123-bot/TEST-TASK-1.git'
+    agent any
+    environment {
+        IMAGE_NAME = "containerguru1/tp-l-project-1"
+        CONTAINER_NAME = "tp-l-project"
+        HOST_PORT = "8080" // Updated host port to avoid conflicts
+        CONTAINER_PORT = "80"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Madhu-123-bot/TEST-TASK-1.git'
+            }
         }
-      }
-    }
-
-    stage('Stop and Remove Existing Container') {
-      steps {
-        script {
-          sh '''
-            container_id=$(docker ps -aq --filter "name=tp-l-project")
-            if [ -n "$container_id" ]; then
-              docker stop $container_id || true
-              docker rm $container_id || true
-            else
-              echo "No existing container found with name tp-l-project."
-            fi
-          '''
+        stage('Stop and Remove Existing Container') {
+            steps {
+                script {
+                    def containerId = sh(
+                        script: "docker ps -aq --filter name=${CONTAINER_NAME}",
+                        returnStdout: true
+                    ).trim()
+                    if (containerId) {
+                        echo "Stopping and removing existing container: ${containerId}"
+                        sh """
+                            docker stop ${containerId}
+                            docker rm ${containerId}
+                        """
+                    } else {
+                        echo "No existing container found with name ${CONTAINER_NAME}."
+                    }
+                }
+            }
         }
-      }
-    }
-
-    stage('Build Docker Image') {
-      steps {
-        script {
-          dockerImage = docker.build("containerguru1/tp-l-project-1")
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t ${IMAGE_NAME} ."
+            }
         }
-      }
-    }
-
-    stage('Push Docker Image to Docker Hub') {
-      steps {
-        script {
-          docker.withRegistry('https://registry.hub.docker.com', 'doc-hub-cred') {
-            dockerImage.push("latest")
-          }
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                withDockerRegistry(credentialsId: 'dockerhub-credentials', url: '') {
+                    sh """
+                        docker tag ${IMAGE_NAME} registry.hub.docker.com/${IMAGE_NAME}:latest
+                        docker push registry.hub.docker.com/${IMAGE_NAME}:latest
+                    """
+                }
+            }
         }
-      }
-    }
-
-    stage('Deploy Updated Container') {
-      steps {
-        script {
-          sh '''
-            docker pull containerguru1/tp-l-project-1:latest
-            docker run -d --name tp-l-project -p 80:80 containerguru1/tp-l-project-1:latest
-          '''
-        }
-      }
-    }
-  }
-
-  post {
-    always {
-      echo "Pipeline executed."
-    }
-    failure {
-      echo "Pipeline failed!"
-    }
-    success {
-      echo "Pipeline completed successfully!"
-    }
-  }
-}
+        stage('Deploy Updated Container') {
+            steps {
+                script {
+                    sh """
+                        docker pull ${IMAGE_NAME}:latest
+                        docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IM
