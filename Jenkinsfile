@@ -3,7 +3,7 @@ pipeline {
     environment {
         IMAGE_NAME = "containerguru1/tp-l-project-1"  // Removed .git extension
         CONTAINER_NAME = "tp-l-project-1"  // Removed .git extension
-        HOST_PORT = "8080"
+        HOST_PORT = "80"
         CONTAINER_PORT = "80"
     }
     stages {
