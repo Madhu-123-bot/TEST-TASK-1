@@ -15,20 +15,20 @@ pipeline {
         stage('Stop and Remove Existing Container') {
             steps {
                 script {
-                    // Get container ID for the one running on port 80
+                    // Get the container ID for the one running on port 80, regardless of the container name
                     def containerId = sh(
-                        script: "docker ps -aq --filter 'name=${CONTAINER_NAME}' --filter 'publish=${HOST_PORT}'",
+                        script: "docker ps -aq --filter 'publish=${HOST_PORT}'",
                         returnStdout: true
                     ).trim()
 
                     if (containerId) {
-                        echo "Stopping and removing existing container with ID: ${containerId}"
+                        echo "Stopping and removing container: ${containerId}"
                         sh """
                             docker stop ${containerId}
                             docker rm ${containerId}
                         """
                     } else {
-                        echo "No existing container found with the name ${CONTAINER_NAME} and port ${HOST_PORT}."
+                        echo "No container found running on port ${HOST_PORT}."
                     }
                 }
             }
