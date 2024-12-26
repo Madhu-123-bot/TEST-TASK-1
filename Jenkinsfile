@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment {
-        IMAGE_NAME = "containerguru1/tp-l-project-1"
-        CONTAINER_NAME = "tp-l-project"
+        IMAGE_NAME = "containerguru1/tp-l-project-1.git"
+        CONTAINER_NAME = "tp-l-project-1.git"
         HOST_PORT = "8080" // Updated host port
         CONTAINER_PORT = "80"
     }
