@@ -9,13 +9,14 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+                // Pull the latest changes from GitHub
                 git branch: 'main', url: 'https://github.com/Madhu-123-bot/TEST-TASK-1.git'
             }
         }
         stage('Stop and Remove Existing Container') {
             steps {
                 script {
-                    // Get the container ID for the one running on port 80, regardless of the container name
+                    // Stop and remove any existing container running on port 80
                     def containerId = sh(
                         script: "docker ps -aq --filter 'publish=${HOST_PORT}'",
                         returnStdout: true
@@ -35,12 +36,14 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
+                // Build the image from the updated code
                 sh "docker build -t ${IMAGE_NAME} ."
             }
         }
         stage('Deploy Updated Container') {
             steps {
                 script {
+                    // Run the updated container using the new image, bound to port 80
                     sh """
                         docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}
                     """
