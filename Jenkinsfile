@@ -1,9 +1,9 @@
 pipeline {
     agent any
     environment {
-        IMAGE_NAME = "containerguru1/tp-l-project-1.git"
-        CONTAINER_NAME = "tp-l-project-1.git"
-        HOST_PORT = "8080" // Updated host port
+        IMAGE_NAME = "containerguru1/tp-l-project-1.git"  // Removed .git extension
+        CONTAINER_NAME = "tp-l-project-1.git"  // Removed .git extension
+        HOST_PORT = "8080"
         CONTAINER_PORT = "80"
     }
     stages {
@@ -38,7 +38,7 @@ pipeline {
         }
         stage('Push Docker Image to Docker Hub') {
             steps {
-                withDockerRegistry(credentialsId: 'doc-hub-cred', url: '') {
+                withDockerRegistry(credentialsId: 'dockerhub-credentials', url: 'https://index.docker.io/v1/') {
                     sh """
                         docker tag ${IMAGE_NAME} registry.hub.docker.com/${IMAGE_NAME}:latest
                         docker push registry.hub.docker.com/${IMAGE_NAME}:latest
