@@ -6,6 +6,9 @@ pipeline {
         HOST_PORT = "80"  // Port 80 (as you want to deploy to port 80)
         CONTAINER_PORT = "80"  // The internal container port
     }
+    triggers {
+        githubPush()  // Ensures the pipeline triggers automatically on GitHub push events
+    }
     stages {
         stage('Checkout') {
             steps {
