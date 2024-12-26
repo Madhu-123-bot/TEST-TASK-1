@@ -3,7 +3,7 @@ pipeline {
     environment {
         IMAGE_NAME = "containerguru1/tp-l-project-1"
         CONTAINER_NAME = "tp-l-project"
-        HOST_PORT = "8080" // Updated host port to avoid conflicts
+        HOST_PORT = "8080" // Updated host port
         CONTAINER_PORT = "80"
     }
     stages {
@@ -51,4 +51,6 @@ pipeline {
                 script {
                     sh """
                         docker pull ${IMAGE_NAME}:latest
-                        docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IM
+                        docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}:latest
+                    """
+        
