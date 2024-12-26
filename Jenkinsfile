@@ -53,4 +53,8 @@ pipeline {
                         docker pull ${IMAGE_NAME}:latest
                         docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}:latest
                     """
-        
+                }
+            }
+        }
+    }
+}
