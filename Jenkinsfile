@@ -3,7 +3,7 @@ pipeline {
     environment {
         IMAGE_NAME = "containerguru1/tp-l-project-1"  // Removed .git extension
         CONTAINER_NAME = "tp-l-project-1"  // Removed .git extension
-        HOST_PORT = "80"
+        HOST_PORT = "8080"
         CONTAINER_PORT = "80"
     }
     stages {
@@ -36,22 +36,11 @@ pipeline {
                 sh "docker build -t ${IMAGE_NAME} ."
             }
         }
-        stage('Push Docker Image to Docker Hub') {
-            steps {
-                withDockerRegistry(credentialsId: 'dockerhub-credentials', url: 'https://index.docker.io/v1/') {
-                    sh """
-                        docker tag ${IMAGE_NAME} registry.hub.docker.com/${IMAGE_NAME}:latest
-                        docker push registry.hub.docker.com/${IMAGE_NAME}:latest
-                    """
-                }
-            }
-        }
         stage('Deploy Updated Container') {
             steps {
                 script {
                     sh """
-                        docker pull ${IMAGE_NAME}:latest
-                        docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}:latest
+                        docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}
                     """
                 }
             }
