@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment {
-        IMAGE_NAME = "containerguru1/tp-l-project-1.git"  // Removed .git extension
-        CONTAINER_NAME = "tp-l-project-1.git"  // Removed .git extension
+        IMAGE_NAME = "containerguru1/tp-l-project-1"  // Removed .git extension
+        CONTAINER_NAME = "tp-l-project-1"  // Removed .git extension
         HOST_PORT = "8080"
         CONTAINER_PORT = "80"
     }
